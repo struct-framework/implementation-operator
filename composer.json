@@ -1,7 +1,7 @@
 {
   "name": "struct/operator",
   "license": "MIT",
-  "description": "",
+  "description": "Simple package for operator overloading",
   "require": {
     "php": "~8.2.7|~8.1.5",
     "struct/contracts": "^1.1.0"
