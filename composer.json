@@ -1,14 +1,14 @@
 {
-  "name": "struct/operator",
-  "license": "MIT",
-  "description": "Simple package for operator overloading",
-  "require": {
-    "php": "~8.2.7|~8.1.5",
-    "struct/contracts": "^1.1.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Struct\\Operator\\": "src"
+    "name": "struct/operator",
+    "license": "MIT",
+    "description": "Simple package for operator overloading",
+    "require": {
+        "php": "~8.2.7|~8.1.5",
+        "struct/contracts": "^1.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Struct\\Operator\\": "src"
+        }
     }
-  }
 }
