@@ -7,6 +7,9 @@ namespace Struct\Operator;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Enum\Operator\Comparison;
 
+/**
+ * @deprecated pleas use O instead
+ */
 final class Compare
 {
     public static function equals(ComparableInterface $left, ComparableInterface $right): bool
