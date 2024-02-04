@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Struct\Operator;
 
+use Exception\Unexpected\UnexpectedException;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\Operator\SubInterface;
 use Struct\Contracts\Operator\SumInterface;
+use Struct\Contracts\SerializableToInt;
 use Struct\Enum\Operator\Comparison;
+use Struct\Exception\Operator\CompareException;
 use Struct\Exception\Operator\DataTypeException;
 
 final class O
@@ -68,39 +71,72 @@ final class O
         return $result;
     }
 
-    public static function equals(ComparableInterface $left, ComparableInterface $right): bool
+    protected static function _compare(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): Comparison
     {
-        $compare = $left->compare($right);
+        if ($left::class !== $right::class) {
+            throw new CompareException('The objects to compare must be of same type <' . $left::class . '> and <' . $right::class . '> given', 1707056159);
+        }
+
+        if (
+            is_a($left, ComparableInterface::class) === true &&
+            is_a($right, ComparableInterface::class) === true
+        ) {
+            $compare = $left->compare($right);
+            return $compare;
+        }
+
+        if (
+            is_a($left, SerializableToInt::class) !== true ||
+            is_a($right, SerializableToInt::class) !== true
+        ) {
+            throw new UnexpectedException(1707056225);
+        }
+
+        $leftInt = $left->serializeToInt();
+        $rightInt = $right->serializeToInt();
+        if ($leftInt > $rightInt) {
+            return Comparison::greaterThan;
+        }
+
+        if ($leftInt < $rightInt) {
+            return Comparison::lessThan;
+        }
+        return Comparison::equal;
+    }
+
+    public static function equals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
+    {
+        $compare = self::_compare($left, $right);
         if ($compare === Comparison::equal) {
             return true;
         }
         return false;
     }
 
-    public static function notEquals(ComparableInterface $left, ComparableInterface $right): bool
+    public static function notEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
     {
         return self::equals($left, $right) === false;
     }
 
-    public static function lessThan(ComparableInterface $left, ComparableInterface $right): bool
+    public static function lessThan(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
     {
-        $compare = $left->compare($right);
+        $compare = self::_compare($left, $right);
         if ($compare === Comparison::lessThan) {
             return true;
         }
         return false;
     }
 
-    public static function greaterThan(ComparableInterface $left, ComparableInterface $right): bool
+    public static function greaterThan(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
     {
-        $compare = $left->compare($right);
+        $compare = self::_compare($left, $right);
         if ($compare === Comparison::greaterThan) {
             return true;
         }
         return false;
     }
 
-    public static function lessThanOrEquals(ComparableInterface $left, ComparableInterface $right): bool
+    public static function lessThanOrEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
     {
         if (self::equals($left, $right) === true) {
             return true;
@@ -111,7 +147,7 @@ final class O
         return false;
     }
 
-    public static function greaterThanOrEquals(ComparableInterface $left, ComparableInterface $right): bool
+    public static function greaterThanOrEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
     {
         if (self::equals($left, $right) === true) {
             return true;
