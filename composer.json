@@ -9,7 +9,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Struct\\Operator\\": "src"
+            "Struct\\Operator\\": "src",
+            "Struct\\Operator\\Internal\\": "src-internal"
         }
     }
 }

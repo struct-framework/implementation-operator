@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Struct\Operator;
 
-use Exception\Unexpected\UnexpectedException;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\Operator\SubInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\Contracts\SerializableToInt;
-use Struct\Enum\Operator\Comparison;
-use Struct\Exception\Operator\CompareException;
+use Struct\Contracts\SerializableToString;
 use Struct\Exception\Operator\DataTypeException;
+use Struct\Operator\Internal\Compare;
 
 final class O
 {
@@ -71,90 +70,45 @@ final class O
         return $result;
     }
 
-    protected static function _compare(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): Comparison
-    {
-        if ($left::class !== $right::class) {
-            throw new CompareException('The objects to compare must be of same type <' . $left::class . '> and <' . $right::class . '> given', 1707056159);
-        }
-
-        if (
-            is_a($left, ComparableInterface::class) === true &&
-            is_a($right, ComparableInterface::class) === true
-        ) {
-            $compare = $left->compare($right);
-            return $compare;
-        }
-
-        if (
-            is_a($left, SerializableToInt::class) !== true ||
-            is_a($right, SerializableToInt::class) !== true
-        ) {
-            throw new UnexpectedException(1707056225);
-        }
-
-        $leftInt = $left->serializeToInt();
-        $rightInt = $right->serializeToInt();
-        if ($leftInt > $rightInt) {
-            return Comparison::greaterThan;
-        }
-
-        if ($leftInt < $rightInt) {
-            return Comparison::lessThan;
-        }
-        return Comparison::equal;
+    public static function equals(
+        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+    ): bool {
+        return Compare::equals($left, $right);
     }
 
-    public static function equals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        $compare = self::_compare($left, $right);
-        if ($compare === Comparison::equal) {
-            return true;
-        }
-        return false;
+    public static function notEquals(
+        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+    ): bool {
+        return Compare::notEquals($left, $right);
     }
 
-    public static function notEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        return self::equals($left, $right) === false;
+    public static function lessThan(
+        int|float|ComparableInterface|SerializableToInt $left,
+        int|float|ComparableInterface|SerializableToInt $right
+    ): bool {
+        return Compare::lessThan($left, $right);
     }
 
-    public static function lessThan(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        $compare = self::_compare($left, $right);
-        if ($compare === Comparison::lessThan) {
-            return true;
-        }
-        return false;
+    public static function greaterThan(
+        int|float|ComparableInterface|SerializableToInt $left,
+        int|float|ComparableInterface|SerializableToInt $right
+    ): bool {
+        return Compare::greaterThan($left, $right);
     }
 
-    public static function greaterThan(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        $compare = self::_compare($left, $right);
-        if ($compare === Comparison::greaterThan) {
-            return true;
-        }
-        return false;
+    public static function lessThanOrEquals(
+        int|float|ComparableInterface|SerializableToInt $left,
+        int|float|ComparableInterface|SerializableToInt $right
+    ): bool {
+        return Compare::lessThanOrEquals($left, $right);
     }
 
-    public static function lessThanOrEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        if (self::equals($left, $right) === true) {
-            return true;
-        }
-        if (self::lessThan($left, $right) === true) {
-            return true;
-        }
-        return false;
-    }
-
-    public static function greaterThanOrEquals(ComparableInterface|SerializableToInt $left, ComparableInterface|SerializableToInt $right): bool
-    {
-        if (self::equals($left, $right) === true) {
-            return true;
-        }
-        if (self::greaterThan($left, $right) === true) {
-            return true;
-        }
-        return false;
+    public static function greaterThanOrEquals(
+        int|float|ComparableInterface|SerializableToInt $left,
+        int|float|ComparableInterface|SerializableToInt $right
+    ): bool {
+        return Compare::greaterThanOrEquals($left, $right);
     }
 }
