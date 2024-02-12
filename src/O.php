@@ -12,6 +12,7 @@ use Struct\Contracts\SerializableToInt;
 use Struct\Contracts\SerializableToString;
 use Struct\Exception\Operator\DataTypeException;
 use Struct\Operator\Internal\Compare;
+use UnitEnum;
 
 final class O
 {
@@ -71,15 +72,15 @@ final class O
     }
 
     public static function equals(
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $right
     ): bool {
         return Compare::equals($left, $right);
     }
 
     public static function notEquals(
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $right
     ): bool {
         return Compare::notEquals($left, $right);
     }

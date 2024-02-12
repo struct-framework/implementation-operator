@@ -11,15 +11,23 @@ use Struct\Contracts\SerializableToString;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\Operator\CompareException;
 use Struct\Exception\Operator\DataTypeException;
+use UnitEnum;
 
 final class Compare
 {
     public static function equals(
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $right
     ): bool {
         self::checkType($left, $right);
+
         if (is_object($left) === true && is_object($right) === true) {
+            if (
+                is_a($left, UnitEnum::class) === true &&
+                is_a($right, UnitEnum::class) === true
+            ) {
+                return $left === $right;
+            }
             if (
                 is_a($left, ComparableInterface::class) === true &&
                 is_a($right, ComparableInterface::class) === true
@@ -44,8 +52,8 @@ final class Compare
     }
 
     public static function notEquals(
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $left,
-        string|int|float|bool|ComparableInterface|SerializableToString|SerializableToInt $right
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $left,
+        string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $right
     ): bool {
         return self::equals($left, $right) === false;
     }
