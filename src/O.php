@@ -6,24 +6,24 @@ namespace Struct\Operator;
 
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
-use Struct\Contracts\Operator\SubInterface;
+use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\Contracts\SerializableToInt;
 use Struct\Contracts\SerializableToString;
-use Struct\Exception\Operator\DataTypeException;
+use Struct\Operator\Internal\Calculate;
 use Struct\Operator\Internal\Compare;
 use UnitEnum;
 
 final class O
 {
-    public static function increment(IncrementableInterface $object): void
+    public static function increment(int|IncrementableInterface &$object): void
     {
-        $object->increment();
+        Calculate::increment($object);
     }
 
-    public static function decrement(IncrementableInterface $object): void
+    public static function decrement(int|IncrementableInterface &$object): void
     {
-        $object->decrement();
+        Calculate::decrement($object);
     }
 
     /**
@@ -31,44 +31,52 @@ final class O
      * @param array<T> $summandList
      * @return T
      */
-    public static function sum(array $summandList): SumInterface
+
+    /**
+     * @template T of int|float|SumInterface
+     * @param array<T> $summandList
+     * @return T
+     */
+    public static function sum(array $summandList): int|float|SumInterface
     {
-        if (count($summandList) === 0) {
-            throw new DataTypeException('There must be at least one summand', 1696344860);
-        }
-        $summand01 = $summandList[0];
-        /** @var class-string<SumInterface> $className */
-        $className = $summand01::class;
-        $result = $className::sum($summandList);
-        return $result;
+        return Calculate::sum($summandList);
     }
 
     /**
-     * @template T of SumInterface
+     * @template T of int|float|SumInterface
      * @param T $summand01
      * @param T $summand02
      * @return T
      */
-    public static function add(SumInterface $summand01, SumInterface $summand02): SumInterface
-    {
-        /** @var class-string<SumInterface> $className */
-        $className = $summand01::class;
-        $result = $className::sum([$summand01, $summand02]);
-        return $result;
+    public static function add(
+        int|float|SumInterface $summand01,
+        int|float|SumInterface $summand02
+    ): int|float|SumInterface {
+        return Calculate::add($summand01, $summand02);
     }
 
     /**
-     * @template T of SubInterface
-     * @param T $minuend
-     * @param T $subtrahend
+     * @template T of int|float|(SumInterface&SignChangeInterface)
+     * @param T $left
+     * @param T $right
      * @return T
      */
-    public static function sub(SubInterface $minuend, SubInterface $subtrahend): SubInterface
-    {
-        /** @var class-string<SubInterface> $className */
-        $className = $minuend::class;
-        $result = $className::sub($minuend, $subtrahend);
-        return $result;
+    public static function sub(
+        int|float|(SumInterface&SignChangeInterface) $left,
+        int|float|(SumInterface&SignChangeInterface) $right
+    ): int|float|(SumInterface&SignChangeInterface) {
+        return Calculate::sub($left, $right);
+    }
+
+    /**
+     * @template T of int|float|(SumInterface&SignChangeInterface)
+     * @param T $left
+     * @return T
+     */
+    public static function singChange(
+        int|float|SignChangeInterface $left,
+    ): int|float|SignChangeInterface {
+        return Calculate::singChange($left);
     }
 
     public static function equals(

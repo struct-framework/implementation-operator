@@ -10,10 +10,12 @@ use Struct\Contracts\SerializableToInt;
 use Struct\Contracts\SerializableToString;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\Operator\CompareException;
-use Struct\Exception\Operator\DataTypeException;
 use UnitEnum;
 
-final class Compare
+/**
+ * @internal
+ */
+final class Compare extends AbstractOperator
 {
     public static function equals(
         string|int|float|bool|UnitEnum|ComparableInterface|SerializableToString|SerializableToInt $left,
@@ -137,23 +139,5 @@ final class Compare
             return true;
         }
         return false;
-    }
-
-    protected static function checkType(mixed $left, mixed $right): void
-    {
-        $leftType = self::readType($left);
-        $rightType = self::readType($right);
-        if ($leftType !== $rightType) {
-            throw new DataTypeException('The data type of $left <' . $leftType . '> and $right <' . $rightType . '> must be same', 1707723361);
-        }
-    }
-
-    protected static function readType(mixed $value): string
-    {
-        $type = gettype($value);
-        if (is_object($value) === true) {
-            return $value::class;
-        }
-        return $type;
     }
 }
